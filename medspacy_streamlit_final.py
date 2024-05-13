@@ -52,7 +52,7 @@ def visualize_ent(doc, context=True, sections=True, colors=None):
             ents_data.append((ent_data, "section"))
     if len(ents_data) == 0:  # No data to display
         viz_data = [{"text": doc.text, "ents": []}]
-        st.write("ents_data is null")
+        st.write("No entities or context modifiers were found in this text.")
         options = dict()
     else:
         ents_data = sorted(ents_data, key=lambda x: x[0]["start"])
@@ -164,15 +164,17 @@ def render_svg(svg):
     html = r'<img src="data:image/svg+xml;base64,%s"/>' % b64
     st.write(html, unsafe_allow_html=True)
 
-st.header("MedSpaCy")
+st.header("Medical term and context explorer")
+st.write("Legacy MedSpaCy visualization demo: entities, context modifiers and section boundaries.")
+st.info("Use synthetic text only. Outputs are model annotations, not clinical conclusions.")
 from PIL import Image
 image = Image.open('medspacy.jpg')
 st.sidebar.image(image, caption = "MedSpaCy")
 nlp = medspacy.load("en_info_3700_i2b2_2012",disable = "target_matcher")
 #Processing Text
 ner = nlp.get_pipe('ner')
-DEFAULT_TEXT = "Write Your Text Here"
-text = st.text_area("Text to analyze", DEFAULT_TEXT, height=200)
+DEFAULT_TEXT = "Synthetic example: The patient denies cough. A family member has asthma."
+text = st.text_area("Synthetic text to analyze", DEFAULT_TEXT, height=200, max_chars=20000)
 doc = nlp(text)
 
 #st.write(doc)
@@ -200,7 +202,7 @@ ConTextItem("diagnosed in <YEAR>", "HISTORICAL",
 	pattern=[
 	{"LOWER": "diagnosed"},
 	{"LOWER": "in"},
-	{"LOWER": {"REGEX": "(19|20)\d\d"}}
+	{"LOWER": {"REGEX": r"(19|20)\d\d"}}
 	])
 ]
 context.add(item_data)
